@@ -1,0 +1,58 @@
+import [balsa.types.basic]
+import [btypes]
+import [comp_sbox]
+
+procedure basicrkey (input key : kvector; output expand : bvector) is
+  variable temp : bvector
+  variable temp2 : array 0..3 of byte
+  array 0..3 of channel sbi : byte
+  array 0..3 of channel sbo : byte
+  variable i,j : 4 bits
+  variable rcon : 8 bits
+begin
+  for || i in 0..3 then
+    comp_sbox (sbi[i], sbo[i])
+  end ||
+  loop
+    key -> then
+      for ; i in 0..15 then
+        temp.d[i] := key.d[i]
+      end ||
+      case key.r of
+        1 then rcon := 0x1 |
+        2 then rcon := 0x2 |
+        3 then rcon := 0x4 |
+        4 then rcon := 0x8 |
+        5 then rcon := 0x10 |
+        6 then rcon := 0x20 |
+        7 then rcon := 0x40 |
+        8 then rcon := 0x80 |
+        9 then rcon := 0x1b |
+       10 then rcon := 0x36
+        else rcon := 0
+      end
+    end -- select
+    ;
+    -- perform byte rotatation and byte sub
+    for || i in 0..3 then
+      sbi[i] <- temp.d[12+((i+1)%4)]
+      --proc_sbox(<- temp.d[12+((i+1)%4)], ->temp2[i])
+    end
+    ||
+    for || i in 0..3 then
+      sbo[i] -> then
+        if i = 0 then
+          temp.d[i] := temp.d[i] xor sbo[i] xor rcon
+        else
+          temp.d[i] := temp.d[i] xor sbo[i]
+        end
+      end --select
+    end ;
+    for ; i in 1..3 then
+      for || j in 0..3 then
+        temp.d[i*4+j] := temp.d[i*4+j] xor temp.d[i*4+j-4]
+      end
+    end ;
+    expand <- temp
+  end
+end

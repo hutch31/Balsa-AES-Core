@@ -1,0 +1,26 @@
+import [balsa.types.basic]
+import [btypes]
+import [basic_xtime]
+
+procedure basic_mixcol (input ci_0 : byte;
+                        input ci_1 : byte;
+                        input ci_2 : byte;
+                        input ci_3 : byte;
+                        output co_0 : byte;
+                        output co_1 : byte;
+                        output co_2 : byte;
+                        output co_3 : byte) is
+  variable bx   : column
+begin
+  ci_0, ci_1, ci_2, ci_3 -> then
+    basic_xtime (<-ci_0,->bx[0]) ||
+    basic_xtime (<-ci_1,->bx[1]) ||
+    basic_xtime (<-ci_2,->bx[2]) ||
+    basic_xtime (<-ci_3,->bx[3])
+    ;
+    co_0 <- bx[0] xor bx[1] xor ci_1 xor ci_2 xor ci_3 ||
+    co_1 <- ci_0 xor bx[1] xor bx[2] xor ci_2 xor ci_3 ||
+    co_2 <- ci_0 xor ci_1 xor bx[2] xor bx[3] xor ci_3 ||
+    co_3 <- bx[0] xor ci_0 xor ci_1 xor ci_2 xor bx[3]
+  end
+end

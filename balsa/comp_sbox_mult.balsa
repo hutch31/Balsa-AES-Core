@@ -1,0 +1,15 @@
+import [balsa.types.basic]
+import [btypes]
+
+procedure comp_sbox_mult4 (input x : 4 bits; input y : 4 bits;
+                         output z : 4 bits) is
+begin
+  loop
+    x, y ->! then
+      z <- ( bit4 { (#x[3] and #y[1])  xor  (#x[2] and #y[2])  xor  (#x[1] and #y[3])  xor  (#x[0] and #y[0]),
+                    ((#x[3] xor #x[2]) and #y[2])  xor  ((#x[2] xor #x[1]) and #y[3])  xor  ((#x[3] xor #x[0]) and #y[1])  xor  (#x[1] and #y[0]),
+                    ((#x[3] xor #x[2]) and #y[3])  xor ((#x[3] xor #x[0]) and #y[2])  xor  (#x[2] and #y[0])  xor (#x[1] and #y[1]),
+                    ((#x[3] xor #x[0]) and #y[3])  xor (#x[3] and #y[0]) xor (#x[2] and #y[1])  xor  (#x[1] and #y[2]) } as nibble)
+    end
+  end
+end

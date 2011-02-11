@@ -1,0 +1,33 @@
+import [balsa.types.basic]
+import [btypes]
+
+procedure comp_sbox_gen (input a : 4 bits; input b : 4 bits;
+                       output gen : 4 bits) is
+begin
+  loop
+    a, b ->! then
+      gen <- ( bit4 { ((#a[3]xor #a[0]) and (not #b[3])) xor
+	              ((not #a[3]) and #b[0])xor
+	              (#a[2] and (not #b[1])) xor
+	              (#a[1] or #b[2]),
+
+                      ((#a[3] xor #a[0]) and (#b[3] xor #b[0])) xor 
+	              ((#a[3] xor #a[2]) and #b[1]) xor 
+	              (#a[2] or #b[2]) xor
+	              (#a[1] and ((not #b[3]) xor #b[2])),
+   
+                      ((#a[3]xor #a[2]) and #b[2]) xor 
+		      (#a[2] or #b[3]) xor 
+		      (#a[3] and #b[1]) xor
+	  	      (#a[1] and (not #b[3]))  xor 
+		      (#a[1] and #b[0]) xor 
+		      (#a[0] or #b[1]),
+
+                      (#a[3] and (not #b[3])) xor 
+	              ((#a[3] xor #a[0]) and #b[2]) xor 
+	       	      (#a[2] or #b[3]) xor 
+	       	      (#a[2] and #b[0]) xor
+	       	      (#a[1] and #b[1]) } as nibble )
+    end
+  end
+end

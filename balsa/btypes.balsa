@@ -1,0 +1,21 @@
+type bitrec4 is record
+  z0 : bit;
+  z1 : bit;
+  z2 : bit;
+  z3 : bit
+end
+
+-- array types for bit comp/decomp
+type bit4 is array 4 of bit
+type bit8 is array 8 of bit
+
+type bvector is record
+  d : array 0..15 of 8 bits
+end
+
+type column is array 0..3 of 8 bits
+
+type kvector is record
+  r : 8 bits;
+  d : array 0..15 of 8 bits
+end

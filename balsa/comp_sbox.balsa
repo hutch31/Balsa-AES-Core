@@ -1,0 +1,71 @@
+import [balsa.types.basic]
+import [btypes]
+import [comp_sbox_gen]
+import [comp_sbox_mult]
+
+procedure comp_sbox (input index : byte;
+                    output sbox : byte) is
+  channel schc, sclc : 4 bits
+  channel hl_sop, x_inv : 4 bits
+  channel hl_sum : 4 bits
+  channel prh, prl : 4 bits
+begin  
+  loop
+    index ->! then
+      schc <- (bit4 { #index[7] xor #index[5] xor #index[1],
+                      #index[7] xor #index[5] xor #index[3] xor #index[2],
+                      #index[7] xor #index[5],
+                      #index[6] xor #index[5] xor #index[4] } as nibble) ||
+      sclc <- (bit4 { #index[1] xor #index[0],
+                      #index[7] xor #index[5] xor #index[3],
+                      #index[6] xor #index[4] xor #index[3] xor #index[2],
+                      #index[6] xor #index[5] xor #index[3] } as nibble)
+    end --select
+  end -- loop
+  ||
+  comp_sbox_gen (schc, sclc, hl_sop) ||
+  loop
+    hl_sop -> then
+      case hl_sop of 
+      0x0 then x_inv <- 0x0|
+      0x1 then x_inv <- 0x1|
+      0x2 then x_inv <- 0x9|
+      0x3 then x_inv <- 0xe|
+      0x4 then x_inv <- 0xd|
+      0x5 then x_inv <- 0xb|
+      0x6 then x_inv <- 0x7|
+      0x7 then x_inv <- 0x6|
+      0x8 then x_inv <- 0xf|
+      0x9 then x_inv <- 0x2|
+      0xa then x_inv <- 0xc|
+      0xb then x_inv <- 0x5|
+      0xc then x_inv <- 0xa|
+      0xd then x_inv <- 0x4|
+      0xe then x_inv <- 0x3|
+      0xf then x_inv <- 0x8
+      end --case
+    end --select
+  end --loop
+  ||
+  loop
+    sclc, schc ->! then
+      hl_sum <- sclc xor (bit4{#schc[3],#schc[3] xor #schc[0],#schc[1],#schc[2]} as nibble)
+    end
+  end
+  ||
+  comp_sbox_mult4 (schc, x_inv, prh) ||
+  comp_sbox_mult4 (hl_sum, x_inv, prl) ||
+  loop
+    prh, prl ->! then
+      sbox <- (bit8 { not (#prh[2] xor #prh[1] xor #prh[0] xor #prl[2] xor #prl[0]),
+                      not (#prh[3] xor #prh[2] xor #prh[1] xor 
+                           #prl[3] xor #prl[2] xor #prl[1] xor #prl[0]),
+                      #prh[1] xor #prl[3] xor #prl[0],
+                      #prh[3] xor #prh[2] xor #prl[2] xor #prl[0],
+                      #prh[3] xor #prh[1] xor #prl[3] xor #prl[1] xor #prl[0],
+                      not (#prh[0] xor #prl[3] xor #prl[2] xor #prl[1]),
+                      not (#prh[3] xor #prh[2] xor #prh[1]),
+                      #prh[2] xor #prh[1] xor #prl[2] xor #prl[1]} as byte)
+     end -- select
+  end --loop
+end

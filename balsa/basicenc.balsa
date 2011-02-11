@@ -1,0 +1,87 @@
+import [balsa.types.basic]
+import [btypes]
+import [comp_sbox]
+import [basic_mixcol]
+import [basicrkey]
+
+procedure basicenc (input key_in : bvector;
+                    input data_in : bvector;
+                    output data_out : bvector) is
+  variable i,j : byte
+  variable rnd : byte
+  variable key : bvector
+  variable rkey : kvector
+  channel  rki  : kvector
+  channel  rko  : bvector
+  array 0..15 of channel sbi : byte
+  array 0..15 of channel sbo : byte
+  variable cw  : bvector -- current word
+  variable psub, prot : bvector -- after byte sub
+  array 0..15 of channel pcola : byte
+  array 0..15 of channel pcolb : byte
+  array 0..15 of channel pcol : byte
+  --variable pcol : bvector -- after MixCols()
+begin
+  for || i in 0..15 then
+    comp_sbox (sbi[i], sbo[i])
+  end ||
+  basicrkey (rki, rko) ||
+  loop
+     
+    key_in -> then
+        key := key_in
+    end ;
+    data_in -> then
+        -- add round key
+        for || i in 0..15 then
+          cw.d[i] := data_in.d[i] xor key.d[i] ||
+          rkey.d[i] := key.d[i]
+        end
+        ;
+        rnd := 1;
+        loop while rnd <= 10 then
+          rkey.r := rnd;
+          rki <- rkey ||
+          for || i in 0..15 then
+            --proc_sbox(<-cw.d[i], ->psub.d[i])
+            sbi[i] <- cw.d[i]
+          end -- for
+          ||
+          -- byte rotation
+          -- 
+          for || j in 0..3 then
+            for || i in 0..3 then
+              --prot.d[j*4+i] := psub.d[((j+i)*4+i)%16]
+              sbo[((j+i)*4+i)%16] -> then
+                prot.d[j*4+i] := sbo[((j+i)*4+i)%16]
+              end
+            end
+          end
+          ;
+          -- mix columns
+          if (rnd = 10) then
+            for || i in 0..15 then
+              pcol.d[i] := prot.d[i]
+            end
+          else
+            for || j in 0..3 then
+              --basic_mixcol (<-prot.d[j*4..j*4+3], ->pcol.d[j*4..j*4+3])
+              basic_mixcol (<-prot.d[j*4],<-prot.d[j*4+1],<-prot.d[j*4+2],<-prot.d[j*4+3],
+                            ->pcol.d[j*4],->pcol.d[j*4+1],->pcol.d[j*4+2],->pcol.d[j*4+3])
+            end -- for MixCol
+          end
+          ;
+          rko -> then
+            for || i in 0..15 then
+              cw.d[i] := pcol.d[i] xor rko.d[i] ||
+              rkey.d[i] := rko.d[i]
+            end
+          end -- AddRoundKey
+          ;
+          rnd := (rnd + 1 as byte)
+        end --loop
+        ;
+        data_out <- cw
+    end -- select
+  end --loop
+end

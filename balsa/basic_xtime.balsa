@@ -1,0 +1,13 @@
+procedure basic_xtime (input xi : 8 bits; output xo : 8 bits) is
+  variable x: bit
+begin
+    x := 0;
+    xi -> then
+      if (#xi[7..7] as bit) then
+        xo <- (#x @ #xi[6..0] as 8 bits) xor 0x1b
+      else
+        xo <- (#x @ #xi[6..0] as 8 bits)
+      end
+    end -- select
+end --procedure
+
