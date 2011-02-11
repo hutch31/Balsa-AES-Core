@@ -59,7 +59,7 @@ comp_sbox_mult.breeze: btypes.breeze
 
 ### Test harness rules
 ### Implementation rules
-impl-basicenc-ex impl-basicenc-ex.log impl-basicenc-ex.lst: basicenc.breeze
+impl-basicenc-ex.v impl-basicenc-ex.log impl-basicenc-ex.lst: basicenc.breeze
 	$(BALSANETLIST) --technology '$(IMPLTECH_basicenc_ex)' \
 	    $(BALSANETLISTOPTS) $(IMPLPRE_basicenc_ex) $(IMPLOPTS_basicenc_ex) --basename impl-basicenc-ex '[basicenc]'
 
