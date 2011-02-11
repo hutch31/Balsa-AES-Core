@@ -17,10 +17,7 @@ procedure basicenc (input key_in : bvector;
   array 0..15 of channel sbo : byte
   variable cw  : bvector -- current word
   variable psub, prot : bvector -- after byte sub
-  array 0..15 of channel pcola : byte
-  array 0..15 of channel pcolb : byte
-  array 0..15 of channel pcol : byte
-  --variable pcol : bvector -- after MixCols()
+  variable pcol : bvector -- after MixCols()
 begin
   for || i in 0..15 then
     comp_sbox (sbi[i], sbo[i])

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+(cd balsa; make ../impl-basicenc-ex.v)
+
+cver env/dual_env.v balsa/impl-basicenc-ex.v env/dual_act_mon.v env/dual_psv_drv.v +define+balsa_simulate +define+balsa_init_time=10 -v /home/hutch/tools/balsa/share/tech/example/example-cells.v
+

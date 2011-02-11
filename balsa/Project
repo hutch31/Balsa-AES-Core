@@ -1,0 +1,26 @@
+;;; Balsa Project file
+;;; Created: Thu Feb 10 18:22:50 2011
+;;; By: hutch@VirtuaFedora (Linux)
+;;; With balsa-mgr version: 4.0 (2010-06-09)
+;;; Supplied with Balsa version: 4.0
+
+(balsa-project
+    (name "AEScore")
+    (import-path ".")
+    (simulation-system "breezesim")
+    (files
+        "basic_mixcol"
+        "basic_xtime"
+        (top-level "basicenc"
+            (implementation "ex"
+                (balsa-netlist-options "--simulation-initialise")
+                (technology "example/dual_b/sim=cver")
+            )
+        )
+        "basicrkey"
+        "btypes"
+        "comp_sbox"
+        "comp_sbox_gen"
+        "comp_sbox_mult"
+    )
+)
