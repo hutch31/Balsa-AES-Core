@@ -34,6 +34,7 @@ begin
           cw.d[i] := data_in.d[i] xor key.d[i] ||
           rkey.d[i] := key.d[i]
         end
+    end
         ;
         rnd := 1;
         loop while rnd <= 10 then
@@ -79,6 +80,6 @@ begin
         end --loop
         ;
         data_out <- cw
-    end -- select
+    --end -- select
   end --loop
 end
