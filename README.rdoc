@@ -1,0 +1,25 @@
+Balsa AES Core
+
+Implemenation of an AES-128 encryption core in the Balsa asynchronous
+hardware description language.  The module name is "basicenc" with a
+prefix added by the synthesis tool, so the Verilog module name is
+<tt>Balsa_basicenc</tt>.
+
+Verilog ports:
+<tt>
+  input activate_0r;    // active low reset
+  output activate_0a;   // not connected
+
+  output key__in_0r;          // key request from RTL
+  input [127:0] key__in_0a0d; // acknowledge with dual-rail key
+  input [127:0] key__in_0a1d;
+
+  output data__in_0r;          // data request from RTL
+  input [127:0] data__in_0a0d; // acknowledge with dual-rail data
+  input [127:0] data__in_0a1d;
+
+  output [127:0] data__out_0r0d;  // data out from AES core
+  output [127:0] data__out_0r1d;
+  input data__out_0a;             // ack for data out
+  input initialise;</tt>
+
